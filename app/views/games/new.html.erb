@@ -1,7 +1,6 @@
 <h1>New Game</h1>
 <%= form_for :game, method: "POST",:url => { :action => :create } do |f| %>
-  game      : <%= f.text_field :name %><br /><br />
-  Opponent  : <%= f.collection_select :black_player_id, @users, :id, :email %><br />
+  game : <%= f.text_field :name %><br /><br />
   <br />
   <%= f.submit %>
 <% end %>

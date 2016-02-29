@@ -9,7 +9,7 @@ class GamesController < ApplicationController
 
 	def create
 		@game = Game.new(games_params)
-		@game.white_player_id = current_user.id
+		# @game.white_player_id = current_user.id
 		if @game.save 
 		 redirect_to @game
 		else
