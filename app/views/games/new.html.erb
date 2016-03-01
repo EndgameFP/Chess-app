@@ -1,0 +1,6 @@
+<h1>New Game</h1>
+<%= form_for :game, method: "POST",:url => { :action => :create } do |f| %>
+  game : <%= f.text_field :name %><br /><br />
+  <br />
+  <%= f.submit %>
+<% end %>
