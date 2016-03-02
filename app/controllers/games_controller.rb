@@ -1,10 +1,12 @@
 class GamesController < ApplicationController
 	before_action :authenticate_user!
+
+	def index
+		@games = Game.all
+	end
 	
 	def new
 		@game = Game.new
-		@users = User.all
-		@users.delete current_user
 	end
 
 	def create
@@ -22,6 +24,9 @@ class GamesController < ApplicationController
 	end
 
 	def destroy
+		@game = Game.find_by_id(params[:id])
+		@game.destroy
+		redirect_to root_path
 	end
 
 	private
