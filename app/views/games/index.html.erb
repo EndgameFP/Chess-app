@@ -1,7 +1,12 @@
 <% @games.each do |game| %> 
 	<% if game.black_player_id == nil %>
-		<div class = "booyah-box"> 
-			<h1><%= link_to game.name, game_path(game) %> </h1>
+	<div class = "booyah-box"> 
+		<h1><%= link_to game.name, game_path(game) %> </h1>
+		<div class="join-game">
+			<%= link_to 'Join Game', game_path(game), class: 'btn btn-primary', 
+			method: :patch %>&nbsp;
 		</div>
+	</div>
 	<% end %>
 <% end %>
+

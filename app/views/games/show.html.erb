@@ -23,3 +23,16 @@
 <div id="chessboard">
 	
 </div>
+<div class="game-info pull-right">
+<ul>
+<li><%= @game.name %></li><br />
+<% @user.each do |user| %>
+<% if user.id == @game.white_player_id %>
+<li>White Player: <%= user.email %></li><br />
+<% end %>
+<% if user.id == @game.black_player_id %>
+<li>Black Player: <%= user.email %></li>
+<% end %>
+<% end %>
+</ul>
+</div>
