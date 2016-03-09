@@ -29,6 +29,7 @@ RSpec.describe GamesController, type: :controller do
 
 			game = Game.last
 			expect(game.name).to eq('Rival')
+			expect(game.white_player_id).to eq(user.id)
 		end
 		it "should properly deal with validation error" do
 			user = FactoryGirl.create(:user)
