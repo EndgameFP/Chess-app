@@ -10,12 +10,12 @@ class GamesController < ApplicationController
 	end
 
 	def create
-		@game = Game.new(games_params)
-		@game.white_player_id = current_user.id
-		if @game.save 
-		 redirect_to @game
+		@game = Game.create(games_params)
+		if @game.valid? 
+			@game.update_attribute(:white_player_id, current_user.id)
+			redirect_to @game
 		else
-		 render 'new'
+			render 'new', status: :unprocessable_entity
 		end
 	end
 
