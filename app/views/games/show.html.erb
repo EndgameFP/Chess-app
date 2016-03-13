@@ -1,28 +1,29 @@
-<script>
- 	var count = 0;
- 	$(function() {
- 		for(var i = 0; i < 8; i++) {
- 			for(var j = 0; j < 8; j++) {
- 				if (count % 8 == 0) {
- 					$('#chessboard').append('<div class="tile" style="clear:both;"></div>');
- 				} else {
- 					$('#chessboard').append('<div class="tile"></div>');
- 				}
- 				if (i % 2 == 0 && j % 2 != 0 || i % 2 != 0 && j % 2 == 0) {
- 					$('.tile').eq(count).addClass('black');
- 				} else {
- 					$('.tile').eq(count).addClass('white');
- 				}
- 				count++;
- 			}
- 		}
- 	});
-</script>
-<h1>Game</h1>
 
 <div id="chessboard">
-	
+	<% tile_color = "white" %>
+	<% for row in 1..8 %>
+		<div class = "row">
+		<% for col in 1..8 %>
+			<% tile_id = "#{row}-#{col}" %>
+			<div class = "tile <%=tile_color%>" id = "<%=tile_id%>" > 
+			<% @pieces.each do |piece| %>
+				<% if piece.tile_id == tile_id %>
+					<%= image_tag piece.image, class: "img-responsive icon" %> 
+					<% break %>
+				<% end %>
+			<% end %>
+
+			<% if col < 8 %>
+				<% tile_color == "white" ? (tile_color = "black") : (tile_color = "white") %>
+			<% end %>
+
+			</div>
+		<% end %>
+		</div>
+	<% end %>
 </div>
+
+
 <div class="game-info pull-right">
 <ul>
 <li><%= @game.name %></li><br />
