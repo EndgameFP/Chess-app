@@ -21,11 +21,19 @@
  }
  
  .black {
- 	background-color:  #809fff;
+ 	background-color:  gray;
  }
 
  .icon {
  	height: 45px;
  	width: 45px;
  	margin: 5px auto;
+ }
+
+ .selected {
+ 	zoom: 1.2;
+ 	padding: 3px;
+ 	border: 1px solid black;
+ 	margin: 1px auto;
+
  }

@@ -7,8 +7,10 @@
 			<% tile_id = "#{row}-#{col}" %>
 			<div class = "tile <%=tile_color%>" id = "<%=tile_id%>" > 
 			<% @pieces.each do |piece| %>
-				<% if piece.tile_id == tile_id %>
-					<%= image_tag piece.image, class: "img-responsive icon" %> 
+				<% if piece.tile_id == tile_id && piece.is_selected %>
+					<%= image_tag piece.image, class: "img-responsive icon selected"  %> 
+				<% elsif piece.tile_id == tile_id %>
+					<%= link_to image_tag(piece.image, class: "img-responsive icon"), piece_path(piece), method: :patch  %> 
 					<% break %>
 				<% end %>
 			<% end %>
