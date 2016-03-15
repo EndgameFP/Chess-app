@@ -1,3 +1,6 @@
+<script>
+
+</script>
 
 <div id="chessboard">
 	<% tile_color = "white" %>
@@ -10,11 +13,18 @@
 				<% if piece.tile_id == tile_id && piece.is_selected %>
 					<%= image_tag piece.image, class: "img-responsive icon selected"  %> 
 				<% elsif piece.tile_id == tile_id %>
-					<%= link_to image_tag(piece.image, class: "img-responsive icon"), piece_path(piece), method: :patch  %> 
+					
+					<% if @selected_piece != nil && piece.user_id != @selected_piece.user_id %>
+						<%= link_to "target", piece_path(@selected_piece, tile_id: tile_id), method: :patch %>	
+					<% end %>
+					<%= link_to image_tag(piece.image, class: "img-responsive icon"), piece_path(piece), method: :patch  %>
 					<% break %>
 				<% end %>
-			<% end %>
 
+			<% end %>
+			<% if !@pieces_on_tiles.include?(tile_id) && @selected_piece != nil %>
+				<%= link_to "target", piece_path(@selected_piece, tile_id: tile_id), method: :patch %>
+			<% end %>
 			<% if col < 8 %>
 				<% tile_color == "white" ? (tile_color = "black") : (tile_color = "white") %>
 			<% end %>
