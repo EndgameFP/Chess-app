@@ -23,16 +23,23 @@ class GamesController < ApplicationController
 		@game = Game.find_by_id(params[:id])
 		@user = User.all
 		@pieces = @game.pieces
+		@selected_piece = @pieces.find_by_is_selected(true)
+		## whether a pieces is selected
+		@pieces_on_tiles = @pieces.map(&:tile_id)
+
+		# if @pieces.find_by_is_selected(true)
+		# 	@selected = true
+		# end
 	end
 
 	def update
 		@game = Game.find_by_id(params[:id])
 		if @game.white_player_id != current_user.id
-		@game.update_attribute(:black_player_id, current_user.id)
-		@game.set_up_game
-		redirect_to @game
+			@game.update_attribute(:black_player_id, current_user.id)
+			@game.set_up_game
+			redirect_to @game
 		else
-		redirect_to root_path, alert: 'Cannot play yourself' 
+			redirect_to root_path, alert: 'Cannot play yourself' 
 		end
 	end
 
