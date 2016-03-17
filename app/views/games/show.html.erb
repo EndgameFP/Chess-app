@@ -1,27 +1,20 @@
 <script>
-	var x_position
-	var y_position
 	var prevpiece 
 	function selectpiece(x,y){
-	$('.selected').removeClass('selected');
-	$("#"+x+"-"+y).addClass("selected")
-	if (prevpiece) {
-		prevpiece.appendTo("#"+x+"-"+y);
-		prevpiece = null;
-		// prevpiece.detatch();	
-
-	}
-	x_position = x
-	y_position = y
-	prevpiece = $("#"+x+"-"+y+" a").detach()
-	// $( "ul" ).has( "li" ).
-		// $.ajax({
-		//  url: "<%= piece_path(:id) %>"
-		//  type : 'PATCH',
-		//  context: document.body
-		// }).done(function() {
-		//  $( this ).addClass( "done" );
-		// });
+		currenttile=$("#"+x+"-"+y);
+		$('.selected').removeClass('selected');
+		$("#"+x+"-"+y).addClass("selected")
+		if (prevpiece && !currenttile.has("img").length ) {
+			console.log(prevpiece)
+			prevpiece.detach();	
+			prevpiece.appendTo("#"+x+"-"+y);
+			prevpiece=null
+			$('.selected').removeClass('selected');
+			//a move was placed so call ajax
+			//$.ajax({ })
+		}else{
+			prevpiece = $("#"+x+"-"+y+" img")
+		} 
 	}
 </script>
 
@@ -30,34 +23,33 @@
 	<% for row in 1..8 %>
 		<div class = "row">
 		<% for col in 1..8 %>
-			<div class = "tile <%=tile_color%>" id = "<%=row%>-<%=col%>" > 
-
-			<% if col < 8 %>
-				<% tile_color == "white" ? (tile_color = "black") : (tile_color = "white") %>
-			<% end %>
-			<% @pieces.each do |piece| %>
-				<% if piece.x_position == row && piece.y_position == col %>
-			<%= link_to image_tag(piece.image, class: "img-responsive icon"), '#', :onclick =>"selectpiece("+row.to_s+","+col.to_s+")" %>				
-			<% end %>
-			<% end %>
+			<div class = "tile <%=tile_color%>" id = "<%=row%>-<%=col%>"  onclick = "selectpiece(<%=row.to_s %>,<%=col.to_s %>)" > 
+				<% if col < 8 %>
+					<% tile_color == "white" ? (tile_color = "black") : (tile_color = "white") %>
+				<% end %>
+				<% @pieces.each do |piece| %>
+					<% if piece.x_position == row && piece.y_position == col %>
+						<%=  image_tag(piece.image, class: "img-responsive icon") %>				
+					<% end %>
+				<% end %>
 			</div>
 		<% end %> <!-- for col -->
 		</div>
 	<% end %> <!-- for row  -->
-
 </div>
 	
 
 <div class="game-info pull-right">
-<ul>
-<li><%= @game.name %></li><br />
-<% @user.each do |user| %>
-<% if user.id == @game.white_player_id %>
-<li>White Player: <%= user.email %></li><br />
-<% end %>
-<% if user.id == @game.black_player_id %>
-<li>Black Player: <%= user.email %></li>
-<% end %>
-<% end %>
-</ul>
+	<ul>
+		<li><%= @game.name %></li>
+		<br />
+		<% @user.each do |user| %>
+			<% if user.id == @game.white_player_id %>
+				<li>White Player: <%= user.email %></li><br />
+			<% end %>
+			<% if user.id == @game.black_player_id %>
+				<li>Black Player: <%= user.email %></li>
+			<% end %>
+		<% end %>
+	</ul>
 </div>
