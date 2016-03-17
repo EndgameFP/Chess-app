@@ -1,18 +1,20 @@
 <script>
 	var prevpiece 
 	function selectpiece(x,y){
-		currenttile=$("#"+x+"-"+y);
-		$('.selected').removeClass('selected');
-		$("#"+x+"-"+y).addClass("selected")
+		
+		currenttile=$("#"+x+"-"+y) //query current tile #2-5 for example
+		$('.selected').removeClass('selected') //clear all selections 
+		currenttile.addClass("selected") //add selected class to current tile
+
+		//if previous piece is null and current tile is empty
 		if (prevpiece && !currenttile.has("img").length ) {
-			console.log(prevpiece)
-			prevpiece.detach();	
-			prevpiece.appendTo("#"+x+"-"+y);
-			prevpiece=null
-			$('.selected').removeClass('selected');
-			//a move was placed so call ajax
-			//$.ajax({ })
+			prevpiece.detach()	 //cut previous piece
+			prevpiece.appendTo("#"+x+"-"+y) //paste previous piece into current tile		
+			prevpiece=null //turn is over so don't keep track of previous piece any more	 
+			$('.selected').removeClass('selected') 	//clear all selections
+			//$.ajax({ }) a move was placed so call ajax here 
 		}else{
+			//store previous piece so the next time click the info is stored
 			prevpiece = $("#"+x+"-"+y+" img")
 		} 
 	}
