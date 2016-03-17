@@ -1,14 +1,27 @@
 <script>
+	var x_position
+	var y_position
+	var prevpiece 
 	function selectpiece(x,y){
 	$('.selected').removeClass('selected');
 	$("#"+x+"-"+y).addClass("selected")
-		$.ajax({
-		 url: "<%= piece_path(:id) %>"
-		 type : 'PATCH',
-		 context: document.body
-		}).done(function() {
-		 $( this ).addClass( "done" );
-		});
+	if (prevpiece) {
+		prevpiece.appendTo("#"+x+"-"+y);
+		prevpiece = null;
+		// prevpiece.detatch();	
+
+	}
+	x_position = x
+	y_position = y
+	prevpiece = $("#"+x+"-"+y+" a").detach()
+	// $( "ul" ).has( "li" ).
+		// $.ajax({
+		//  url: "<%= piece_path(:id) %>"
+		//  type : 'PATCH',
+		//  context: document.body
+		// }).done(function() {
+		//  $( this ).addClass( "done" );
+		// });
 	}
 </script>
 
