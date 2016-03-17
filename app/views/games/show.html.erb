@@ -2,6 +2,13 @@
 	function selectpiece(x,y){
 	$('.selected').removeClass('selected');
 	$("#"+x+"-"+y).addClass("selected")
+		$.ajax({
+		 url: "<%= piece_path(:id) %>"
+		 type : 'PATCH',
+		 context: document.body
+		}).done(function() {
+		 $( this ).addClass( "done" );
+		});
 	}
 </script>
 

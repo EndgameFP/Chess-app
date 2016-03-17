@@ -10,10 +10,6 @@ class PiecesController < ApplicationController
 			@current.update_attribute(:tile_id, params[:tile_id])
 		end
 		@pieces.each do |piece|
-			@z = piece.tile_id.split('-')
-			piece.update_attribute(:x_position, @z[0].to_i)
-			piece.update_attribute(:y_position, @z[1].to_i)
-
 			piece.update_attribute(:is_selected, false)
 		end
 
