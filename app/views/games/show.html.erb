@@ -9,7 +9,7 @@
 		//if previous piece is not null and current tile is empty
 		if (prevpiece && !currenttile.has("img").length ) {
 			prevpiece.detach()	 //cut previous piece
-			prevpiece.appendTo("#"+x+"-"+y) //paste previous piece into current tile		
+			prevpiece.appendTo(currenttile) //paste previous piece into current tile		
 			prevpiece=null //turn is over so don't keep track of previous piece any more	 
 			$('.selected').removeClass('selected') 	//clear all selections
 			//$.ajax({ }) a move was placed so call ajax here 
