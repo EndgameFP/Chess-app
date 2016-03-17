@@ -1,5 +1,8 @@
 <script>
-
+	function selectpiece(x,y){
+	$('.selected').removeClass('selected');
+	$("#"+x+"-"+y).addClass("selected")
+	}
 </script>
 
 <div id="chessboard">
@@ -7,45 +10,23 @@
 	<% for row in 1..8 %>
 		<div class = "row">
 		<% for col in 1..8 %>
-			<% tile_id = "#{row}-#{col}" %>
-			<div class = "tile <%=tile_color%>" id = "<%=tile_id%>" > 
-			<% @pieces.each do |piece| %>
-				<% if piece.tile_id == tile_id && piece.is_selected %><!-- piece tile_id same as tile its on, is_selected:true , show selected css-->
-					<%= image_tag piece.image, class: "img-responsive icon selected"  %> 
-				<% elsif piece.tile_id == tile_id %>
-					<% if @selected_piece != nil && piece.user_id != @selected_piece.user_id %> 
-					<% #if @selected_piece.is_obstructed? == false %>
-						<%= link_to "opposing piece", piece_path(@selected_piece, tile_id: tile_id), method: :patch %>
-					<% end %>
-					<%= link_to image_tag(piece.image, class: "img-responsive icon"), piece_path(piece), method: :patch  %>
-					<% break %>
-				<% end %>
-
-			<% end %> <!-- pieces do -->
-
-
-			<% if !@pieces_on_tiles.include?(tile_id) && @selected_piece != nil %> <!-- no piece with tile id -->
-				<%= link_to "any open tile", piece_path(@selected_piece, tile_id: tile_id), method: :patch %><!-- any open tile -->
-			<% end %>
-			
-
+			<div class = "tile <%=tile_color%>" id = "<%=row%>-<%=col%>" > 
 
 			<% if col < 8 %>
 				<% tile_color == "white" ? (tile_color = "black") : (tile_color = "white") %>
 			<% end %>
-
+			<% @pieces.each do |piece| %>
+				<% if piece.x_position == row && piece.y_position == col %>
+			<%= link_to image_tag(piece.image, class: "img-responsive icon"), '#', :onclick =>"selectpiece("+row.to_s+","+col.to_s+")" %>				
+			<% end %>
+			<% end %>
 			</div>
 		<% end %> <!-- for col -->
 		</div>
 	<% end %> <!-- for row  -->
-</div>
-		<!-- @selected_piece = @pieces.find_by_is_selected(true)
-		## whether a pieces is selected
-		@pieces_on_tiles = @pieces.map(&:tile_id)
 
-		# if @pieces.find_by_is_selected(true)
-		# 	@selected = true
-		# end -->
+</div>
+	
 
 <div class="game-info pull-right">
 <ul>
