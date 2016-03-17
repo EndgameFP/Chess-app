@@ -1,7 +1,6 @@
 <script>
 	var prevpiece 
 	function selectpiece(x,y){
-		
 		currenttile=$("#"+x+"-"+y) //query current tile #2-5 for example
 		$('.selected').removeClass('selected') //clear all selections 
 		currenttile.addClass("selected") //add selected class to current tile
@@ -14,7 +13,7 @@
 			$('.selected').removeClass('selected') 	//clear all selections
 			//$.ajax({ }) a move was placed so call ajax here 
 		}else{
-			//store previous piece so the next time click the info is stored
+			//store previous piece so the next time you click the info is stored
 			prevpiece = $("#"+x+"-"+y+" img")
 		} 
 	}
