@@ -6,7 +6,7 @@
 		$('.selected').removeClass('selected') //clear all selections 
 		currenttile.addClass("selected") //add selected class to current tile
 
-		//if previous piece is null and current tile is empty
+		//if previous piece is not null and current tile is empty
 		if (prevpiece && !currenttile.has("img").length ) {
 			prevpiece.detach()	 //cut previous piece
 			prevpiece.appendTo("#"+x+"-"+y) //paste previous piece into current tile		
