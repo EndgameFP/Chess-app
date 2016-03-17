@@ -4,21 +4,36 @@
 #chessboard {
  	float: left;
  	margin: 0 auto;
- 	border: solid 1px;
+ 	
  	margin: 50px;
+ 	width: 560px;
+ 	height: 560px;
  }
  
  .tile {
  	width: 70px;
  	height: 70px;
  	float: left;
+ 
  }
  .white {
  	background-color: white;
- 	color: white;
  }
  
  .black {
- 	background-color: black;
- 	color: black;
+ 	background-color:  gray;
+ }
+
+ .icon {
+ 	height: 45px;
+ 	width: 45px;
+ 	margin: 5px auto;
+ }
+
+ .selected {
+ 	zoom: 1.2;
+ 	padding: 3px;
+ 	border: 1px solid black;
+ 	margin: 1px auto;
+
  }
