@@ -1,4 +1,6 @@
 class PiecesController < ApplicationController
+	
+	respond_to :json
 	def update
 		@current = Piece.find_by_id(params[:id])
 		@game = Game.find_by_id(@current.game_id)
@@ -8,14 +10,14 @@ class PiecesController < ApplicationController
 			piece.update_attribute(:is_selected, false)
 		end
 
-		@current.update_attribute(:is_selected, true)
-		
-		redirect_to game_path(@game)
-
+		@current.update_attribute(:x_position, params[:x_position])
+		@current.update_attribute(:y_position, params[:y_position])
+		respond_with @current 
 	end
+
 
 	private
 	def pieces_params 
-		params.require(:piece).permit(:is_selected, :game_id, :piece_id, :user_id, :x_position, :y_position)
+		params.require(:piece).permit(:piece_id, :user_id, :x_position, :y_position)
 	end
 end
