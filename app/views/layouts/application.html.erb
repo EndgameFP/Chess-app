@@ -27,13 +27,15 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         
-        <li><a href="#">Link</a></li>
+        <li><%= link_to "New Game", new_game_path %></li>
+        <li><%= link_to "About", about_path %></li>
+
         
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
         <% if current_user %>
-          <li><%= link_to "New Game", new_game_path %></li>
+          <li class = "user-email"> <%= "Signed in as #{current_user.email}" %></li>
           <li><%= link_to "Sign out", destroy_user_session_path, method: :delete %></li>
         <% else %>
           <li><%= link_to "Sign In", new_user_session_path %></li>
