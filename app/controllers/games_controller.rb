@@ -22,6 +22,8 @@ class GamesController < ApplicationController
 
 	def show
 		@game = Game.find_by_id(params[:id])
+	
+		Rails.logger.debug @game.pieces[0]
 		@current_user=current_user
 		@user = User.all
 		@pieces = @game.pieces
