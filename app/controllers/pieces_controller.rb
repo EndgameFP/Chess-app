@@ -2,23 +2,12 @@ class PiecesController < ApplicationController
 	
 	respond_to :json
 
-	def is_valid?(piece,current_user,new_x,new_y)
-		@game = @current.game
-		@pieces = @game.pieces
-		@pieces.each do |piece|
-			if piece.x_position.to_i==new_x&&piece.y_position.to_i==new_y
-				return false
-			end
-		end
-		return true
-	end
-
 	def update
 		@current = Piece.find_by_id(params[:id])
 		@current_user = User.find_by_id(params[:user_id])
 		
 		
-		if !is_valid?(@current,@current_user,params[:x_position].to_i,params[:y_position].to_i)
+		if !@current.valid_move?(params[:x_position].to_i,params[:y_position].to_i)
 			return respond_to do |format|
 				format.json { render :json => {:message => "Fail",:status => :not_found } }
 			end

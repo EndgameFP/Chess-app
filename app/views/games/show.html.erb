@@ -5,7 +5,10 @@
 		$('.selected').removeClass('selected') //clear all selections 
 		currenttile.addClass("selected") //add selected class to current tile
 		// && !currenttile.has("img").length 
+
 		if (prevpiece) {
+			var pieceid=prevpiece.data( "piece" )
+			if(!pieceid)return clearboard()
 			$.ajax({ url: "/pieces/"+prevpiece.data( "piece" ) ,
 				method:"PUT",
 				data: {x_position:x,y_position:y,userid:<%=@current_user.id%>}
@@ -14,13 +17,16 @@
 					prevpiece.detach()	 //cut previous piece
 					prevpiece.appendTo(currenttile) //paste previous piece into current tile				
   				}
-  				prevpiece=null //turn is over so don't keep track of previous piece any more	 
-				$('.selected').removeClass('selected') 	//clear all selections
+  				clearboard()
 			});
 		}else{
 			//store previous piece so the next time you click the info is stored
 			prevpiece = $("#"+x+"-"+y+" img")
 		} 
+	}
+	function clearboard(){
+		prevpiece=null //turn is over so don't keep track of previous piece any more	 
+		$('.selected').removeClass('selected') 	//clear all selections
 	}
 </script>
 
