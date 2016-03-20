@@ -2,6 +2,12 @@ class Piece < ActiveRecord::Base
 	belongs_to :game
 	belongs_to :user
 
+	#return false if move is invalid
+	def make_move(x,y)
+		#capture piece logic here
+		return valid_move?(x,y)
+	end
+
  	def is_obstructed?(x,y)
  		game = self.game
 		pieces = game.pieces
