@@ -4,6 +4,12 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
-         has_many :games
-         has_many :pieces
+  # see http://guides.rubyonrails.org/association_basics.html#has-many-association-reference
+  has_many :white_games, class_name: 'Game', foreign_key: :white_player_id
+  has_many :black_games, class_name: 'Game', foreign_key: :black_player_id
+  has_many :pieces
+
+  def games
+    white_games + black_games
+  end
 end
