@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users
    root 'games#index'
+   get 'about', to: 'static_pages#about'
    resources :games, only: [:new, :create, :destroy, :show, :update]
    resources :pieces, only: [:update]
 
