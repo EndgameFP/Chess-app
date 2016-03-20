@@ -3,7 +3,8 @@ class GamesController < ApplicationController
 
 	def index
 		@games = Game.all
-		@user_games = current_user.games
+		@user_games = current_user.games if current_user
+
 	end
 	
 	def new
