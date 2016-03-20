@@ -1,11 +1,14 @@
 class Game < ActiveRecord::Base
-	has_many :pieces
-	belongs_to :user
+  has_many :pieces
+  # see http://guides.rubyonrails.org/association_basics.html#has-many-association-reference
+  # or  http://www.spacevatican.org/2008/5/6/creating-multiple-associations-with-the-same-table/
+  belongs_to :white_player, class_name: 'User'
+  belongs_to :black_player, class_name: 'User'
 
 	validates :name, presence: true
 
 	def set_up_game
-		for col in 1..8 
+		for col in 1..8
 			Pawn.create(user_id: black_player_id, tile_id: "2-#{col}", image: "black_pawn.png", game_id: self.id)
 			Pawn.create(user_id: white_player_id, tile_id: "7-#{col}", image: "white_pawn.png", game_id: self.id)
 
