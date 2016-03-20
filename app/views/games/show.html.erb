@@ -1,4 +1,5 @@
 <script>
+
 	var prevpiece 
 	function selectpiece(x,y){
 		currenttile=$("#"+x+"-"+y) //query current tile #2-5 for example
@@ -28,6 +29,7 @@
 		prevpiece=null //turn is over so don't keep track of previous piece any more	 
 		$('.selected').removeClass('selected') 	//clear all selections
 	}
+
 </script>
 
 <div id="chessboard">
@@ -35,6 +37,7 @@
 	<% for row in 1..8 %>
 		<div class = "row">
 		<% for col in 1..8 %>
+
 			<div class = "tile <%=tile_color%>" id = "<%=row%>-<%=col%>"  onclick = "selectpiece(<%=row.to_s %>,<%=col.to_s %>)" > 
 				<% if col < 8 %>
 					<% tile_color == "white" ? (tile_color = "black") : (tile_color = "white") %>
@@ -43,25 +46,35 @@
 					<% if piece.x_position == row && piece.y_position == col %>
 						<%=  image_tag(piece.image, class: "img-responsive icon",:data => {:piece => piece.id} ) %>				
 					<% end %>
+					<%= link_to image_tag(piece.image, class: "img-responsive icon"), piece_path(piece), method: :patch  %>
+					<% break %>
 				<% end %>
+
+			<% end %>
+			<% if !@pieces_on_tiles.include?(tile_id) && @selected_piece != nil %>
+				<%= link_to "target", piece_path(@selected_piece, tile_id: tile_id), method: :patch %>
+			<% end %>
+			<% if col < 8 %>
+				<% tile_color == "white" ? (tile_color = "black") : (tile_color = "white") %>
+			<% end %>
+
 			</div>
-		<% end %> <!-- for col -->
+		<% end %>
 		</div>
-	<% end %> <!-- for row  -->
+	<% end %>
 </div>
-	
+
 
 <div class="game-info pull-right">
-	<ul>
-		<li><%= @game.name %></li>
-		<br />
-		<% @user.each do |user| %>
-			<% if user.id == @game.white_player_id %>
-				<li>White Player: <%= user.email %></li><br />
-			<% end %>
-			<% if user.id == @game.black_player_id %>
-				<li>Black Player: <%= user.email %></li>
-			<% end %>
-		<% end %>
-	</ul>
+<ul>
+<li><%= @game.name %></li><br />
+<% @user.each do |user| %>
+<% if user.id == @game.white_player_id %>
+<li>White Player: <%= user.email %></li><br />
+<% end %>
+<% if user.id == @game.black_player_id %>
+<li>Black Player: <%= user.email %></li>
+<% end %>
+<% end %>
+</ul>
 </div>

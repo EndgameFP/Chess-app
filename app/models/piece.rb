@@ -1,8 +1,6 @@
 class Piece < ActiveRecord::Base
 	belongs_to :game
 	belongs_to :user
-	has_many :moves
-
 
  	def is_obstructed?(x,y)
  		game = self.game
@@ -19,5 +17,4 @@ class Piece < ActiveRecord::Base
 	def valid_move?(x,y)
 		return self.is_obstructed?(x,y)
 	end
-
 end

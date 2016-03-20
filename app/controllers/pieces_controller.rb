@@ -4,9 +4,6 @@ class PiecesController < ApplicationController
 
 	def update
 		@current = Piece.find_by_id(params[:id])
-		@current_user = User.find_by_id(params[:user_id])
-		
-		
 		if !@current.valid_move?(params[:x_position].to_i,params[:y_position].to_i)
 			return respond_to do |format|
 				format.json { render :json => {:message => "Fail",:status => :not_found } }
