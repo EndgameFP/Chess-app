@@ -1,12 +1,31 @@
-<% @games.each do |game| %> 
-	<% if game.black_player_id == nil %>
-	<div class = "booyah-box"> 
-		<h1><%= link_to game.name, game_path(game) %> </h1>
-		<div class="join-game">
-			<%= link_to 'Join Game', game_path(game), class: 'btn btn-primary', 
-			method: :patch %>&nbsp;
-		</div>
-	</div>
+<div class = "booyah-box">
+	<h2> My Games in Progress</h2>
+	<% @user_games.each do |game| %>
+		<% if game.black_player_id %>
+			<h5> <%= link_to game.name, game_path(game) %> </h5>
+		<% end %>
 	<% end %>
-<% end %>
+</div>
 
+<div class = "booyah-box">
+	<h2> My Open Games </h2>
+	<% @user_games.each do |game| %>
+		<% if game.black_player_id == nil %>
+			<h5> <%= link_to game.name, game_path(game) %> </h5>
+		<% end %>
+	<% end %>
+</div>
+
+<div class = "booyah-box"> 
+	<h2> Join a New Game </h2>
+	<% @games.each do |game| %> 
+		<% if game.black_player_id == nil && game.white_player_id != current_user %>
+			<h5><%= link_to game.name, game_path(game) %> </h5>
+			<div class="join-game">
+				<%= link_to 'Join Game', game_path(game), class: 'btn btn-primary', 
+				method: :patch %>&nbsp;
+			</div>
+		
+		<% end %>
+	<% end %>
+</div>
