@@ -1,7 +1,3 @@
-# NOTE you should never check in debug code like this!
-# this is just here as an example of how to debug
-require 'pry-debugger'
-
 class Piece < ActiveRecord::Base
 	belongs_to :game
 	belongs_to :user

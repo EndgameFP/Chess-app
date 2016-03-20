@@ -14,13 +14,13 @@ class PiecesController < ApplicationController
 		end
 
 		@current.update_attribute(:is_selected, true)
-		
+
 		redirect_to game_path(@game)
 
 	end
 
 	private
-	def pieces_params 
+	def pieces_params
 		params.require(:piece).permit(:is_selected, :game_id, :piece_id)
 	end
 end
