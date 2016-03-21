@@ -2,25 +2,31 @@ class Piece < ActiveRecord::Base
 	belongs_to :game
 	belongs_to :user
 
-	#return false if move is invalid
+	
 	def make_move(x,y)
-		#capture piece logic here
-		return valid_move?(x,y)
+		if is_valid?(x,y)
+			#update piece location
+			#if piece already in square, capture
+			return true
+		else 
+			return false
+		end
 	end
 
  	def is_obstructed?(x,y)
+ 		# Needs to see if any pieces are positioned between piece's current location and destination 
  		game = self.game
 		pieces = game.pieces
 		pieces.each do |piece|
 			if piece.x_position.to_i==x&&piece.y_position.to_i==y
-				return false
+				return true
 			end
 		end
-		return true
+		return false
     end
 
 
-	def valid_move?(x,y)
-		return self.is_obstructed?(x,y)
+	def is_valid?(x,y)
+		# Template for each model's definition
 	end
 end
