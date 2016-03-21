@@ -1,26 +1,25 @@
 class PiecesController < ApplicationController
+	
+	respond_to :json
+	
 	def update
 		@current = Piece.find_by_id(params[:id])
-		@game = Game.find_by_id(@current.game_id)
-		@pieces = @game.pieces
-		@selected = @pieces.map(&:is_selected)
-		@selected_piece = @pieces.find_by_is_selected(true)
-		
-		if @selected.include?(true) && @current.id == @selected_piece.id
-			@current.update_attribute(:tile_id, params[:tile_id])
-		end
-		@pieces.each do |piece|
-			piece.update_attribute(:is_selected, false)
+		if !@current.make_move(params[:x_position].to_i,params[:y_position].to_i)
+			return respond_to do |format|
+				format.json { render :json => {:message => "Fail",:status => :not_found } }
+			end
 		end
 
-		@current.update_attribute(:is_selected, true)
-		
-		redirect_to game_path(@game)
-
+		@current.update_attribute(:x_position, params[:x_position])
+		@current.update_attribute(:y_position, params[:y_position])
+		respond_to do |format|
+			format.json { render :json => {:message => "success"} }
+		end
 	end
+
 
 	private
 	def pieces_params 
-		params.require(:piece).permit(:is_selected, :game_id, :piece_id)
+		params.require(:piece).permit(:id, :user_id, :x_position, :y_position)
 	end
 end

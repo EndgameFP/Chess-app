@@ -9,6 +9,7 @@ class GamesController < ApplicationController
 		@game = Game.new
 	end
 
+
 	def create
 		@game = Game.create(games_params)
 		if @game.valid? 
@@ -21,6 +22,7 @@ class GamesController < ApplicationController
 
 	def show
 		@game = Game.find_by_id(params[:id])
+		@current_user=current_user
 		@user = User.all
 		@pieces = @game.pieces
 		@selected_piece = @pieces.find_by_is_selected(true)
