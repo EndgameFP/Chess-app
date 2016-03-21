@@ -9,9 +9,9 @@ RSpec.describe GamesController, type: :controller do
 	end
 	describe "games#show action" do
 		it "should successfully render game page" do
-			game = FactoryGirl.create(:game)
 			user = FactoryGirl.create(:user)
 			sign_in user
+			game = FactoryGirl.create(:game, white_player_id: user.id)			
 
 			get :show, id: game.id
 
@@ -19,6 +19,27 @@ RSpec.describe GamesController, type: :controller do
 		end
 	end
 
+	describe "games#update action" do
+		it "should generate all pieces when both players join the game" do
+			white_player = FactoryGirl.create(:user)
+			black_player = FactoryGirl.create(:user)
+
+			game = FactoryGirl.create(:game, white_player_id: white_player.id)
+
+			sign_in black_player
+			patch :update, id: game.id
+			game.reload
+
+			expect(response).to redirect_to( game_path(assigns(:game).id))
+			
+			expect(game.white_player_id).to eq(white_player.id)
+			expect(game.black_player_id).to eq(black_player.id)
+			pieces = game.pieces
+
+			expect(pieces.count).to eq(32)
+
+		end
+	end
 	describe "games#create action" do
 		it "should successfully create a new game" do
 			user = FactoryGirl.create(:user)
@@ -28,7 +49,9 @@ RSpec.describe GamesController, type: :controller do
 			expect(response).to redirect_to( game_path(assigns(:game).id))
 
 			game = Game.last
+
 			expect(game.name).to eq('Rival')
+
 			expect(game.white_player_id).to eq(user.id)
 		end
 		it "should properly deal with validation error" do
