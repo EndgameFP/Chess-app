@@ -4,13 +4,11 @@ class Piece < ActiveRecord::Base
 
 	
 	def make_move(x,y)
-		if is_valid?(x,y)
+		return false if self.is_obstructed?(x, y)
+		is_valid?(x,y)
 			#update piece location
 			#if piece already in square, capture
-			return true
-		else 
-			return false
-		end
+			
 	end
 
  	def is_obstructed?(x,y)
