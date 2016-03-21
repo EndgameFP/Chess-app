@@ -1,5 +1,5 @@
 class Knight < Piece
-	def is_valid?(x, y)
-		#Doesn't need to check for obstructions
+	def is_valid? (x, y)
+		
 	end
 end
