@@ -5,6 +5,7 @@ class Game < ActiveRecord::Base
 	validates :name, presence: true
 
 	def set_up_game
+		return if pieces.count == 32
 		for col in 1..8 
 			Pawn.create(user_id: black_player_id, x_position: 2, y_position: col, image: "black_pawn.png", game_id: self.id)
 			Pawn.create(user_id: white_player_id, x_position: 7, y_position: col, image: "white_pawn.png", game_id: self.id)
