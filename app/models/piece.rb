@@ -2,6 +2,7 @@ class Piece < ActiveRecord::Base
 	belongs_to :game
 	belongs_to :user
 
+
 	def make_move(x,y)
 
 		piece_at_dest = piece_at(x,y)
