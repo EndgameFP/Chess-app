@@ -31,9 +31,6 @@ class GamesController < ApplicationController
 		## whether a pieces is selected
 		@pieces_on_tiles = @pieces.map(&:tile_id)
 
-		# if @pieces.find_by_is_selected(true)
-		# 	@selected = true
-		# end
 	end
 
 	def update
