@@ -13,7 +13,11 @@
 				method:"PUT",
 				data: {x_position:x,y_position:y,userid:<%=@current_user.id%>}
 			}).done(function(response) {
-				if(response.message=="success"){
+				if(response.captured){
+					currenttile.empty()
+				}
+
+				if(response.valid){
 					prevpiece.detach()	 //cut previous piece
 					prevpiece.appendTo(currenttile) //paste previous piece into current tile				
   				}

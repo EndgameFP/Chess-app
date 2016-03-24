@@ -2,21 +2,22 @@ class Piece < ActiveRecord::Base
 	belongs_to :game
 	belongs_to :user
 
-	
 	def make_move(x,y)
-		return false if self.is_obstructed?(x, y)
-		is_valid?(x,y)
-			#update piece location
-			#if piece already in square, capture
-
-
-
+		piece_at_dest = piece_at(x,y)
+ 		return { valid:true, captured:piece_at_dest } if piece_at_dest && piece_at_dest.user_id != self.user_id
+		return { valid:false } if self.is_obstructed?(x, y)
+		return { valid:false } if !is_valid?(x,y)
+		return { valid:true }
+	end
+	
+	def piece_at(x,y)
+		return self.game.pieces.where(x_position: x, y_position: y).first
 	end
 
  	def is_obstructed?(dest_x, dest_y)
  		# Checks to see if friendly piece is at destination tile
  		# Will not return true if destination is occupied by enemy piece
- 		piece_at_dest = self.game.pieces.where(x_position: dest_x, y_position: dest_y).first
+ 		piece_at_dest = piece_at(dest_x,dest_y)
  		return true if piece_at_dest && piece_at_dest.user_id == self.user_id
 
  		# Assigns y values according to col position on board	
