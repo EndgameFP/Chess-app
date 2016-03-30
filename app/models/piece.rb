@@ -6,19 +6,7 @@ class Piece < ActiveRecord::Base
 
 
 	def make_move(x,y)
-		unless self.type == "Knight"
-			return false if self.is_obstructed?(x, y)
-		end
-
-		if is_valid?(x,y)
-			piece = self.game.pieces.where(x_position: x, y_position: y).first
-			# Decide on a way to capture a piece and implement here
-			#piece.destroy if piece.present?
-			self.update_attribute(:has_moved, true)
-			return true
-		end
-
-		return false		
+		
 	end
 
 
