@@ -3,6 +3,8 @@ class GamesController < ApplicationController
 
 	def index
 		@games = Game.all
+		@user_games = current_user.games if current_user
+
 	end
 	
 	def new
@@ -29,9 +31,6 @@ class GamesController < ApplicationController
 		## whether a pieces is selected
 		@pieces_on_tiles = @pieces.map(&:tile_id)
 
-		# if @pieces.find_by_is_selected(true)
-		# 	@selected = true
-		# end
 	end
 
 	def update

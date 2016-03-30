@@ -3,10 +3,12 @@ class Piece < ActiveRecord::Base
 	belongs_to :user
 
 	def make_move(x,y)
+
 		piece_at_dest = piece_at(x,y)
- 		return { valid:true, captured:piece_at_dest } if piece_at_dest && piece_at_dest.user_id != self.user_id
-		return { valid:false } if self.is_obstructed?(x, y)
 		return { valid:false } if !is_valid?(x,y)
+ 		return { valid:true, captured:piece_at_dest } if piece_at_dest && piece_at_dest.user_id != self.user_id
+		return { valid:false } if self.is_obstructed?(x, y) && self.type != "knight"
+		
 		return { valid:true }
 	end
 	
