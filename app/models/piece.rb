@@ -4,12 +4,31 @@ class Piece < ActiveRecord::Base
 
 
 	def make_move(x,y)
-
 		piece_at_dest = piece_at(x,y)
-		return { valid:false } if !is_valid?(x,y)
- 		return { valid:true, captured:piece_at_dest } if piece_at_dest && piece_at_dest.user_id != self.user_id
-		return { valid:false } if self.is_obstructed?(x, y) && self.type != "knight"
+		return { valid:false } if !is_valid?(x,y) || self.is_obstructed?(x, y) 
+
+		prev_x = self.x_position
+		prev_y = self.y_position
+		self.update_attributes(:x_position => x, :y_position => y) # Must update position to accurately test for check
+		own_king = self.game.pieces.where(user_id: self.user_id, type: "King").first
 		
+		if !check(own_king).empty? # Can't move and expose own king to check- this statement evaluates to true if there is a threat to the king
+			self.update_attributes(:x_position => prev_x, :y_position => prev_y) #Return moved piece to original position
+			return { valid:false }
+		end
+
+		opponent_king = self.game.pieces.where("user_id != ? AND type = ?", self.user_id, "King").first
+		threats_to_king = check(opponent_king) # Returns array of all pieces putting king in check, which will be used for checkmate
+		if !threats_to_king.empty? # Evaluates true if there is a piece(s) threatening the king
+			puts 'CHECK'
+			#test for checkmate, pass threats and king as params
+			#if in checkmate, end game
+			#else announce check 
+		end 
+
+		self.update_attribute(:has_moved, true)
+
+		return { valid:true, captured:piece_at_dest } if piece_at_dest && piece_at_dest.user_id != self.user_id
 		return { valid:true }
 	end
 	
@@ -17,11 +36,27 @@ class Piece < ActiveRecord::Base
 		return self.game.pieces.where(x_position: x, y_position: y).first
 	end
 
+	def check(king)
+		opponent_pieces = self.game.pieces.where("user_id != ?", king.user_id)
+		threats = [] # Must collect all pieces that threaten the king to use when testing for checkmate
+		opponent_pieces.each do |piece|
+			# Tests if any opponent piece can legally move to the king's position (and capture it)
+			if piece.is_valid?(king.x_position, king.y_position) && !piece.is_obstructed?(king.x_position, king.y_position) 
+				threats << piece	
+			end
+		end
+		return threats
+	end 
+
+
  	def is_obstructed?(dest_x, dest_y)
  		# Checks to see if friendly piece is at destination tile
  		# Will not return true if destination is occupied by enemy piece
  		piece_at_dest = piece_at(dest_x,dest_y)
  		return true if piece_at_dest && piece_at_dest.user_id == self.user_id
+
+ 		# Returns false if piece is Knight, since knights can't be obstructed
+ 		return false if self.type == "Knight"
 
  		# Assigns y values according to col position on board	
 	 	if y_position > dest_y
