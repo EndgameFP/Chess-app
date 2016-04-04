@@ -4,7 +4,6 @@ class PiecesController < ApplicationController
 	
 	def update
 		@current = Piece.find_by_id(params[:id])
-		@game = Game.find_by_id(params[:id])
 		move=@current.make_move(params[:x_position].to_i,params[:y_position].to_i)
 		if move[:valid]
 			@current.update_attribute(:x_position, params[:x_position])
@@ -26,7 +25,4 @@ class PiecesController < ApplicationController
 		params.require(:piece).permit(:id, :user_id, :x_position, :y_position)
 	end
 
-	def current_player
-
-	end
 end
