@@ -1,37 +1,73 @@
 <script>
-	var prevpiece 
-	function selectpiece(x,y){
-		currenttile=$("#"+x+"-"+y) //query current tile #2-5 for example
-		$('.selected').removeClass('selected') //clear all selections 
-		currenttile.addClass("selected") //add selected class to current tile
-		// && !currenttile.has("img").length 
+	// var prevpiece 
+	// function selectpiece(x,y){
+	// 	currenttile=$("#"+x+"-"+y) //query current tile #2-5 for example
+	// 	$('.selected').removeClass('selected') //clear all selections 
+	// 	currenttile.addClass("selected") //add selected class to current tile
+	// 	// && !currenttile.has("img").length 
 
-		if (prevpiece) {
-			var pieceid=prevpiece.data( "piece" )
-			if(!pieceid)return clearboard()
-			$.ajax({ url: "/pieces/"+prevpiece.data( "piece" ) ,
-				method:"PUT",
-				data: {x_position:x,y_position:y,userid:<%=@current_user.id%>}
-			}).done(function(response) {
-				if(response.captured){
-					currenttile.empty()
-				}
+	// 	if (prevpiece) {
+	// 		var pieceid=prevpiece.data( "piece" )
+	// 		if(!pieceid)return clearboard()
+	// 		$.ajax({ url: "/pieces/"+prevpiece.data( "piece" ) ,
+	// 			method:"PUT",
+	// 			data: {x_position:x,y_position:y,userid:<%=@current_user.id%>}
+	// 		}).done(function(response) {
+	// 			if(response.captured){
+	// 				currenttile.empty()
+	// 			}
 
-				if(response.valid){
-					prevpiece.detach()	 //cut previous piece
-					prevpiece.appendTo(currenttile) //paste previous piece into current tile				
-  				}
-  				clearboard()
-			});
-		}else{
-			//store previous piece so the next time you click the info is stored
-			prevpiece = $("#"+x+"-"+y+" img")
-		} 
-	}
-	function clearboard(){
-		prevpiece=null //turn is over so don't keep track of previous piece any more	 
-		$('.selected').removeClass('selected') 	//clear all selections
-	}
+	// 			if(response.valid){
+	// 				prevpiece.detach()	 //cut previous piece
+	// 				prevpiece.appendTo(currenttile) //paste previous piece into current tile				
+ //  				}
+ //  				clearboard()
+	// 		});
+	// 	}else{
+	// 		//store previous piece so the next time you click the info is stored
+	// 		prevpiece = $("#"+x+"-"+y+" img")
+	// 	} 
+	// }
+	// function clearboard(){
+	// 	prevpiece=null //turn is over so don't keep track of previous piece any more	 
+	// 	$('.selected').removeClass('selected') 	//clear all selections
+	// }
+	$(function() {
+		$('.icon').draggable({
+			appendTo: "body",
+			scroll: false,
+			containment: "#chessboard",
+			revert: true,
+			revertDuration: 100
+		});
+		$('.tile').droppable({
+			hoverClass: "ui-state-hover",
+			accept: ".icon",
+			drop: function(event, ui) {
+				var piece = ui.draggable;
+				var target = $(event.target);
+				var x_pos = target.attr("id").charAt(0);
+				var y_pos = target.attr("id").charAt(2);
+				$.ajax({
+					url: "/pieces/" + piece.data( "piece" ),
+					method: "PUT",
+					data: { 
+						x_position: x_pos, 
+						y_position: y_pos, 
+						userid: <%=@current_user.id%>
+					}
+				}).done(function(response) {
+					if (response.valid) {
+						piece.appendTo(target);
+					}
+					if (response.captured) {
+						//find piece on the target tile, then replace it
+						target.find($('.icon')).replaceWith(piece);
+					}
+				});
+			}
+		});
+	});
 </script>
 
 <div id="chessboard">
