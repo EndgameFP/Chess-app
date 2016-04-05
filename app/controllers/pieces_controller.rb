@@ -24,4 +24,5 @@ class PiecesController < ApplicationController
 	def pieces_params 
 		params.require(:piece).permit(:id, :user_id, :x_position, :y_position)
 	end
+
 end

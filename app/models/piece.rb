@@ -1,11 +1,16 @@
 class Piece < ActiveRecord::Base
+	after_save :update_game_turn
+
+	attr_accessor :wpid
+	attr_accessor :bpid
 	belongs_to :game
 	belongs_to :user
 
 
 	def make_move(x,y)
-
 		piece_at_dest = piece_at(x,y)
+	    return { valid:false } if !moving_own_piece?
+	    return { valid:false } if !player_turn
 		return { valid:false } if !is_valid?(x,y)
  		return { valid:true, captured:piece_at_dest } if piece_at_dest && piece_at_dest.user_id != self.user_id
 		return { valid:false } if self.is_obstructed?(x, y) && self.type != "knight"
@@ -13,6 +18,20 @@ class Piece < ActiveRecord::Base
 		return { valid:true }
 	end
 	
+	def update_game_turn
+		self.game.bpid if self.color == 'white'
+		self.game.wpid if self.color == 'black'
+	end
+
+	def player_turn
+		user_id == game.turn_player_id
+	end
+
+	def moving_own_piece?
+   		self.color == 'white' && User.current.id == game.white_player_id ||
+    	self.color == 'black' && User.current.id == game.black_player_id
+ 	end
+
 	def piece_at(x,y)
 		return self.game.pieces.where(x_position: x, y_position: y).first
 	end
