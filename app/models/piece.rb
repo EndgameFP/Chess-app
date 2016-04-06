@@ -95,6 +95,5 @@ class Piece < ActiveRecord::Base
 		# Template for each model's definition
 	end
 
-	def can_en_passant?(x,y)
-	end
+
 end

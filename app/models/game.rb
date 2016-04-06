@@ -14,10 +14,7 @@ class Game < ActiveRecord::Base
   	end
 
   	def set_last_move(piece_id, prev_x, prev_y)
-  		puts "calling last move"
   		update_attribute(:last_move, [piece_id, prev_x, prev_y])
-  		puts "#{self.last_move.inspect}"
-
   	end
 
 	def set_up_game
