@@ -33,6 +33,8 @@ gem 'bootstrap-sass', '~> 3.3.6'
 # Add Rubocop to analyze code
 gem 'rubocop', require: false
 
+# Add jquery-ui
+gem 'jquery-ui-rails'
 # Add Pry
 
 gem 'devise', '>= 3.2.4'
