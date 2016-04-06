@@ -1,16 +1,21 @@
 class Piece < ActiveRecord::Base
+	after_save :update_game_turn
+
+	attr_accessor :wpid
+	attr_accessor :bpid
 	belongs_to :game
 	belongs_to :user
 
 
 	def make_move(x,y)
 		piece_at_dest = piece_at(x,y)
+		return { valid:false } if !moving_own_piece?
+	    return { valid:false } if !player_turn
 		return { valid:false } if !is_valid?(x,y) || self.is_obstructed?(x, y) 
 
 		prev_x = self.x_position
 		prev_y = self.y_position
 		self.update_attributes(:x_position => x, :y_position => y) # Must update position to accurately test for check
-		own_king = self.game.pieces.where(user_id: self.user_id, type: "King").first
 		
 		if !check(own_king).empty? # Can't move and expose own king to check- this statement evaluates to true if there is a threat to the king
 			self.update_attributes(:x_position => prev_x, :y_position => prev_y) #Return moved piece to original position
@@ -32,6 +37,20 @@ class Piece < ActiveRecord::Base
 		return { valid:true }
 	end
 	
+	def update_game_turn
+		self.game.bpid if self.color == 'white'
+		self.game.wpid if self.color == 'black'
+	end
+
+	def player_turn
+		user_id == game.turn_player_id
+	end
+
+	def moving_own_piece?
+   		self.color == 'white' && User.current.id == game.white_player_id ||
+    	self.color == 'black' && User.current.id == game.black_player_id
+ 	end
+
 	def piece_at(x,y)
 		return self.game.pieces.where(x_position: x, y_position: y).first
 	end

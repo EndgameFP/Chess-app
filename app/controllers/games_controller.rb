@@ -16,6 +16,7 @@ class GamesController < ApplicationController
 		@game = Game.create(games_params)
 		if @game.valid? 
 			@game.update_attribute(:white_player_id, current_user.id)
+			@game.update_attribute(:turn_player_id, current_user.id)
 			redirect_to @game
 		else
 			render 'new', status: :unprocessable_entity
@@ -42,7 +43,7 @@ class GamesController < ApplicationController
 		else
 			redirect_to root_path, alert: 'Cannot play yourself' 
 		end
-	end
+ 	end
 
 	def destroy
 		@game = Game.find_by_id(params[:id])
