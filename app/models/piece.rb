@@ -9,16 +9,18 @@ class Piece < ActiveRecord::Base
 
 	def make_move(x,y)
 		piece_at_dest = piece_at(x,y)
-		return { valid:false } if !moving_own_piece?
-	    return { valid:false } if !player_turn
+		#return { valid:false } if !moving_own_piece?
+	   # return { valid:false } if !player_turn
 		return { valid:false } if !is_valid?(x,y) || self.is_obstructed?(x, y) 
 
 		prev_x = self.x_position
 		prev_y = self.y_position
 		self.update_attributes(:x_position => x, :y_position => y) # Must update position to accurately test for check
 		
-		if !check(own_king).empty? # Can't move and expose own king to check- this statement evaluates to true if there is a threat to the king
+		own_king = self.game.pieces.where(user_id: self.user_id, type: "King").first
+		if check(own_king).count != 0 # Can't move and expose own king to check- this statement evaluates to true if there is a threat to the king
 			self.update_attributes(:x_position => prev_x, :y_position => prev_y) #Return moved piece to original position
+			puts "CAN'T PUT OWN KING IN CHECK"
 			return { valid:false }
 		end
 
