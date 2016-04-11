@@ -8,6 +8,7 @@ class PiecesController < ApplicationController
 		if move[:valid]
 			@current.update_attribute(:x_position, params[:x_position])
 			@current.update_attribute(:y_position, params[:y_position])
+			@current.update_attribute(:has_moved, true)
 		end
 	
 		respond_to do |format|
