@@ -9,7 +9,6 @@ class Piece < ActiveRecord::Base
 
 	def make_move(x,y)
 		piece_at_dest = piece_at(x,y)
-<<<<<<< HEAD
 		return { valid:false } if !is_valid?(x,y)
 		return { valid:false } if self.is_obstructed?(x, y) && self.type != "knight"
 
@@ -19,9 +18,8 @@ class Piece < ActiveRecord::Base
  			castling_move_rook(y)
  			return { valid:true } 
  		end
-=======
 		#return { valid:false } if !moving_own_piece?
-	   # return { valid:false } if !player_turn
+	    # return { valid:false } if !player_turn
 		return { valid:false } if !is_valid?(x,y) || self.is_obstructed?(x, y) 
 
 		prev_x = self.x_position
@@ -47,7 +45,6 @@ class Piece < ActiveRecord::Base
 		self.update_attribute(:has_moved, true)
 
 		return { valid:true, captured:piece_at_dest } if piece_at_dest && piece_at_dest.user_id != self.user_id
->>>>>>> master
 		return { valid:true }
 	end
 	
@@ -88,18 +85,15 @@ class Piece < ActiveRecord::Base
  		piece_at_dest = piece_at(dest_x,dest_y)
  		return true if piece_at_dest && piece_at_dest.user_id == self.user_id || pieces_between?(dest_x,dest_y)
 
-<<<<<<< HEAD
  		return false
     end
 
     def pieces_between?(dest_x, dest_y)
-    	# Assigns y values according to col position on board	
-=======
+
  		# Returns false if piece is Knight, since knights can't be obstructed
  		return false if self.type == "Knight"
 
  		# Assigns y values according to col position on board	
->>>>>>> master
 	 	if y_position > dest_y
 			left = dest_y
 			right = y_position
