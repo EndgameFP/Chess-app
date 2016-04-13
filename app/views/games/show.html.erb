@@ -69,7 +69,12 @@
 			<% if user.id == @game.black_player_id %>
 				<li>Black Player: <%= user.email %></li>
 			<% end %>
+			<br />
+			<% if user.id == @game.turn_player_id %>
+				<li>Your Turn: <%= user.email %></li>
+			<% end %>
 		<% end %>
+
 	</ul>
 
 </div>

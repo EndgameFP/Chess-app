@@ -1,4 +1,5 @@
 class Pawn < Piece
+
 	def is_valid?(dest_x, dest_y)
 		dx = (self.x_position - dest_x).abs
 		dy = (self.y_position - dest_y).abs
@@ -26,7 +27,6 @@ class Pawn < Piece
 	end
 
 
-
 	def can_en_passant?(dest_x, dest_y)
 		return false if self.game.last_move.empty?
 
@@ -46,3 +46,4 @@ class Pawn < Piece
 	end
 
 end
+
