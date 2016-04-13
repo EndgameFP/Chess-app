@@ -9,8 +9,9 @@ class Piece < ActiveRecord::Base
 
 	def make_move(x,y)
 		piece_at_dest = piece_at(x,y)
-		#return { valid:false } if !moving_own_piece? ######
-	    #return { valid:false } if !player_turn #######
+		return { valid:false } if !moving_own_piece? 
+	    return { valid:false } if !player_turn 
+	    return { valid:false } if game.status == "Complete"
 		return { valid:false } if !is_valid?(x,y) || self.is_obstructed?(x, y) 
  
  		## move rook piece to castling position
