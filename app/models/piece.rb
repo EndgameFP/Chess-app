@@ -1,11 +1,13 @@
 class Piece < ActiveRecord::Base
 	after_save :update_game_turn
+	after_save :pawn_promote
 
 	attr_accessor :wpid
 	attr_accessor :bpid
+	# attr_accessor :promotion
+
 	belongs_to :game
 	belongs_to :user
-
 
 	def make_move(x,y)
 		piece_at_dest = piece_at(x,y)
@@ -16,6 +18,27 @@ class Piece < ActiveRecord::Base
 		return { valid:false } if self.is_obstructed?(x, y) && self.type != "knight"
 		
 		return { valid:true }
+	end
+
+	def white_pawn
+		return true if self.type == 'Pawn' && self.color == 'white'
+	end
+
+	def black_pawn
+		return true if self.type == 'Pawn' && self.color == 'black'
+	end
+
+	def can_promote
+		return true if self.x_position == 1 && white_pawn == true
+		return true if self.x_position == 8 && black_pawn == true
+	end
+
+	def pawn_promote
+		if self.white_pawn == true && self.can_promote == true
+			self.update_attributes(type: 'Queen', image: "white_queen.png")
+		elsif self.black_pawn == true && self.can_promote == true
+			self.update_attributes(type: 'Queen', image: "black_queen.png")
+		end
 	end
 	
 	def update_game_turn
