@@ -16,11 +16,10 @@ class Piece < ActiveRecord::Base
 		prev_x = self.x_position
 		prev_y = self.y_position
 		self.update_attributes(:x_position => x, :y_position => y) # Must update position to accurately test for check
-		
+
 		own_king = self.game.pieces.where(user_id: self.user_id, type: "King").first
 		if check(own_king).count != 0 # Can't move and expose own king to check- this statement evaluates to true if there is a threat to the king
 			self.update_attributes(:x_position => prev_x, :y_position => prev_y) #Return moved piece to original position
-			puts "CAN'T PUT OWN KING IN CHECK"
 			return { valid:false }
 		end
 
@@ -34,8 +33,16 @@ class Piece < ActiveRecord::Base
 		end 
 
 		self.update_attribute(:has_moved, true)
+		self.game.set_last_move(self.id, self.x_position, self.y_position)
 
 		return { valid:true, captured:piece_at_dest } if piece_at_dest && piece_at_dest.user_id != self.user_id
+
+		if self.type == "Pawn" && self.can_en_passant?(x,y)
+			captured_pawn = self.game.pieces.where(id: self.game.last_move[0]).first
+			self.game.set_last_move(self.id, self.x_position, self.y_position)
+			return { valid:true, captured:captured_pawn } 
+		end
+
 		return { valid:true }
 	end
 	
@@ -123,4 +130,6 @@ class Piece < ActiveRecord::Base
 	def is_valid?(x,y)
 		# Template for each model's definition
 	end
+
+
 end
