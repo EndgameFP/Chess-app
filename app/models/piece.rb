@@ -9,8 +9,17 @@ class Piece < ActiveRecord::Base
 
 	def make_move(x,y)
 		piece_at_dest = piece_at(x,y)
+		return { valid:false } if !is_valid?(x,y)
+		return { valid:false } if self.is_obstructed?(x, y) && self.type != "knight"
+
+ 		return { valid:true, captured:piece_at_dest } if piece_at_dest && piece_at_dest.user_id != self.user_id
+ 		## move rook piece to castling position
+ 		if self.type == "King" && self.castling?
+ 			castling_move_rook(y)
+ 			return { valid:true } 
+ 		end
 		#return { valid:false } if !moving_own_piece?
-	   # return { valid:false } if !player_turn
+	    # return { valid:false } if !player_turn
 		return { valid:false } if !is_valid?(x,y) || self.is_obstructed?(x, y) 
 
 		prev_x = self.x_position
@@ -181,7 +190,12 @@ class Piece < ActiveRecord::Base
  		# Will not return true if destination is occupied by enemy piece
  		return true if self.x_position == dest_x && self.y_position == dest_y
  		piece_at_dest = piece_at(dest_x,dest_y)
- 		return true if piece_at_dest && piece_at_dest.user_id == self.user_id
+ 		return true if piece_at_dest && piece_at_dest.user_id == self.user_id || pieces_between?(dest_x,dest_y)
+
+ 		return false
+    end
+
+    def pieces_between?(dest_x, dest_y)
 
  		# Returns false if piece is Knight, since knights can't be obstructed
  		return false if self.type == "Knight"
@@ -226,6 +240,17 @@ class Piece < ActiveRecord::Base
 		return false
     end
 
+    ## move rook when castling apply
+    def castling_move_rook(dest_y)
+    	dy = self.y_position - dest_y
+    	if dy > 0
+    		rook = self.game.pieces.where(user_id: self.user_id, type: "Rook", y_position: 1).first
+    		rook.update_attributes(:y_position => 4, :has_moved => true)
+    	else
+    		rook = self.game.pieces.where(user_id: self.user_id, type: "Rook", y_position: 8).first
+    		rook.update_attributes(:y_position=>6, :has_moved => true)
+    	end
+    end
 
 	def is_valid?(x,y)
 		# Template for each model's definition
