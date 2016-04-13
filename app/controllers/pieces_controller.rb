@@ -15,6 +15,12 @@ class PiecesController < ApplicationController
 			move[:captured].destroy
 		end
 
+
+		if move[:checkmate]
+			flash[:alert] = "Checkmate!"
+			@current.game.set_status("Complete")
+		end
+
 	 	update_firebase(
 	 		move: move, 
 	 		x_position: params[:x_position] ,

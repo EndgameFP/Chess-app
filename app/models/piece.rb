@@ -11,8 +11,9 @@ class Piece < ActiveRecord::Base
 
 	def make_move(x,y)
 		piece_at_dest = piece_at(x,y)
-		return { valid:false } if !moving_own_piece?
-	    return { valid:false } if !player_turn
+		return { valid:false } if !moving_own_piece? 
+	    return { valid:false } if !player_turn 
+	    return { valid:false } if game.status == "Complete"
 		return { valid:false } if !is_valid?(x,y) || self.is_obstructed?(x, y) 
  
  		## move rook piece to castling position
@@ -33,23 +34,23 @@ class Piece < ActiveRecord::Base
 
 		opponent_king = self.game.pieces.where("user_id != ? AND type = ?", self.user_id, "King").first
 		threats_to_king = check(opponent_king) # Returns array of all pieces putting king in check, which will be used for checkmate
+		check_mate = false
 		if !threats_to_king.empty? # Evaluates true if there is a piece(s) threatening the king
-			puts 'CHECK'
-			puts "CHECKMATE" if checkmate(opponent_king, threats_to_king)
+			check_mate = true if checkmate?(opponent_king, threats_to_king)
 		end 
 
 		self.update_attribute(:has_moved, true)
 		self.game.set_last_move(self.id, self.x_position, self.y_position)
 
-		return { valid:true, captured:piece_at_dest } if piece_at_dest && piece_at_dest.user_id != self.user_id
+		return { valid:true, captured:piece_at_dest, checkmate:check_mate } if piece_at_dest && piece_at_dest.user_id != self.user_id
 
 		if self.type == "Pawn" && self.can_en_passant?(x,y)
 			captured_pawn = self.game.pieces.where(id: self.game.last_move[0]).first
 			self.game.set_last_move(self.id, self.x_position, self.y_position)
-			return { valid:true, captured:captured_pawn } 
+			return { valid:true, captured:captured_pawn, checkmate:check_mate } 
 		end
 
-		return { valid:true }
+		return { valid:true, checkmate:check_mate }
 	end
 
 	def white_pawn
@@ -109,7 +110,7 @@ class Piece < ActiveRecord::Base
 		return threats
 	end 
 
-	def checkmate(king, threats)
+	def checkmate?(king, threats)
 		# Test to see if king can move out of check
 		can_move = true
 		opponent_pieces = self.game.pieces.where("user_id != ?", king.user_id)

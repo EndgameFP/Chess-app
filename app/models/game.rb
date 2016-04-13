@@ -17,6 +17,10 @@ class Game < ActiveRecord::Base
   		update_attribute(:last_move, [piece_id, prev_x, prev_y])
   	end
 
+  	def set_status(status)
+  		update_attribute(:status, status)
+  	end
+
 	def set_up_game
 		return if pieces.count == 32
 		for col in 1..8 
