@@ -14,7 +14,7 @@ class Pawn < Piece
 
 		# Pawns can move a maximum of one square diagonally and only when capturing
 		piece_at_dest = self.game.pieces.where(x_position: dest_x, y_position: dest_y).first
-		return false if dy == 1 && !piece_at_dest.present?
+		return false if dy == 1 && (!piece_at_dest.present? && !can_en_passant?(dest_x, dest_y))
 
 		# Pawns can't capture when moving vertically
 		return false if dy == 0 && piece_at_dest.present?
@@ -24,4 +24,25 @@ class Pawn < Piece
 
 		return true
 	end
+
+
+
+	def can_en_passant?(dest_x, dest_y)
+		return false if self.game.last_move.empty?
+
+		last_piece_moved = self.game.pieces.where(id: self.game.last_move[0]).first
+		prev_x = self.game.last_move[1]
+		prev_y = self.game.last_move[2]
+
+		if last_piece_moved.x_position > prev_x
+			mid_x = prev_x + 1
+		else 
+			mid_x = prev_x - 1 
+		end 
+
+
+		return true if last_piece_moved.type == "Pawn" && (last_piece_moved.x_position - prev_x).abs == 2 && dest_x == mid_x && dest_y == prev_y
+		return false
+	end
+
 end

@@ -13,6 +13,10 @@ class Game < ActiveRecord::Base
   		update_attributes(turn_player_id: white_player_id) 
   	end
 
+  	def set_last_move(piece_id, prev_x, prev_y)
+  		update_attribute(:last_move, [piece_id, prev_x, prev_y])
+  	end
+
 	def set_up_game
 		return if pieces.count == 32
 		for col in 1..8 

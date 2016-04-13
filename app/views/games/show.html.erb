@@ -1,37 +1,4 @@
 <script>
-	// var prevpiece 
-	// function selectpiece(x,y){
-	// 	currenttile=$("#"+x+"-"+y) //query current tile #2-5 for example
-	// 	$('.selected').removeClass('selected') //clear all selections 
-	// 	currenttile.addClass("selected") //add selected class to current tile
-	// 	// && !currenttile.has("img").length 
-
-	// 	if (prevpiece) {
-	// 		var pieceid=prevpiece.data( "piece" )
-	// 		if(!pieceid)return clearboard()
-	// 		$.ajax({ url: "/pieces/"+prevpiece.data( "piece" ) ,
-	// 			method:"PUT",
-	// 			data: {x_position:x,y_position:y,userid:<%=@current_user.id%>}
-	// 		}).done(function(response) {
-	// 			if(response.captured){
-	// 				currenttile.empty()
-	// 			}
-
-	// 			if(response.valid){
-	// 				prevpiece.detach()	 //cut previous piece
-	// 				prevpiece.appendTo(currenttile) //paste previous piece into current tile				
- //  				}
- //  				clearboard()
-	// 		});
-	// 	}else{
-	// 		//store previous piece so the next time you click the info is stored
-	// 		prevpiece = $("#"+x+"-"+y+" img")
-	// 	} 
-	// }
-	// function clearboard(){
-	// 	prevpiece=null //turn is over so don't keep track of previous piece any more	 
-	// 	$('.selected').removeClass('selected') 	//clear all selections
-	// }
 	$(function() {
 		$('.icon').draggable({
 			appendTo: "body",
@@ -75,13 +42,13 @@
 	<% for row in 1..8 %>
 		<div class = "row">
 		<% for col in 1..8 %>
-			<div class = "tile <%=tile_color%>" id = "<%=row%>-<%=col%>"  onclick = "selectpiece(<%=row.to_s %>,<%=col.to_s %>)" > 
+			<div class = "tile <%=tile_color%>" id = "<%=row%>-<%=col%>"> 
 				<% if col < 8 %>
 					<% tile_color == "white" ? (tile_color = "black") : (tile_color = "white") %>
 				<% end %>
 				<% @pieces.each do |piece| %>
 					<% if piece.x_position == row && piece.y_position == col %>
-						<%=  image_tag(piece.image, class: "img-responsive icon",:data => {:piece => piece.id} ) %>				
+						<%= image_tag(piece.image, class: "img-responsive icon",:data => {:piece => piece.id} ) %>				
 					<% end %>
 				<% end %>
 			</div>
@@ -104,4 +71,5 @@
 			<% end %>
 		<% end %>
 	</ul>
+
 </div>
