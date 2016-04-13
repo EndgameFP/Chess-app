@@ -3,7 +3,7 @@
 		<h2> My Games in Progress</h2>
 		<% @user_games.each do |game| %>
 			<% if game.black_player_id && game.status != "Complete" %>
-				<h5> <%= link_to game.name, game_path(game) %> </h5>
+				<h4> <%= link_to game.name, game_path(game) %> </h4>
 			<% end %>
 		<% end %>
 	</div>
@@ -12,7 +12,7 @@
 		<h2> My Open Games </h2>
 		<% @user_games.each do |game| %>
 			<% if game.black_player_id == nil %>
-				<h5> <%= link_to game.name, game_path(game) %> </h5>
+				<h4> <%= link_to game.name, game_path(game) %> </h4>
 			<% end %>
 		<% end %>
 	</div>
@@ -20,14 +20,10 @@
 
 <div class = "booyah-box"> 
 	<h2> Join a New Game </h2>
+	<h6> Click on the game name to join it </h6>
 	<% @games.each do |game| %> 
 		<% if game.black_player_id == nil %>
-			<h3><%= link_to game.name, game_path(game) %> </h3>
-			<div class="join-game">
-				<%= link_to 'Join Game', game_path(game), class: 'btn btn-primary', 
-				method: :patch %>&nbsp;
-			</div>
-		
+			<h4><%= link_to game.name, game_path(game), method: :patch %> </h4>		
 		<% end %>
 	<% end %>
 </div>
