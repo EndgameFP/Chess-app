@@ -37,6 +37,9 @@ gem 'rubocop', require: false
 gem 'jquery-ui-rails'
 # Add Pry
 
+#add Firebase
+gem 'firebase', '~> 0.2.6'
+
 gem 'devise', '>= 3.2.4'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

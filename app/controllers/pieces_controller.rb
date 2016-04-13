@@ -11,12 +11,20 @@ class PiecesController < ApplicationController
 			@current.update_attribute(:has_moved, true)
 		end
 	
-		respond_to do |format|
-			format.json { render :json => move }
-		end
-
 		if move[:captured]
 			move[:captured].destroy
+		end
+
+	 	update_firebase(
+	 		move: move, 
+	 		x_position: params[:x_position] ,
+	 		y_position: params[:y_position] , 
+	 		id: params[:id],
+	 		time_stamp: Time.now)
+	 	
+
+		respond_to do |format|
+			format.json { render :json => move }
 		end
 
 	end
@@ -24,6 +32,15 @@ class PiecesController < ApplicationController
 	private
 	def pieces_params 
 		params.require(:piece).permit(:id, :user_id, :x_position, :y_position)
+	end
+
+	def update_firebase(data)
+		base_uri = 'https://dazzling-fire-5900.firebaseio.com/'
+
+		firebase = Firebase::Client.new(base_uri)
+
+		response = firebase.push('update_piece', data)
+		response.success?
 	end
 
 end
