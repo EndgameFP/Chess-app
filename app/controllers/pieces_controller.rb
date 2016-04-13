@@ -19,6 +19,11 @@ class PiecesController < ApplicationController
 			move[:captured].destroy
 		end
 
+		if move[:checkmate]
+			flash.keep[:alert] = "Checkmate!"
+			@current.game.set_status("Complete")
+		end
+
 	end
 	
 	private

@@ -2,7 +2,7 @@
 	<div class = "booyah-box">
 		<h2> My Games in Progress</h2>
 		<% @user_games.each do |game| %>
-			<% if game.black_player_id %>
+			<% if game.black_player_id && game.status != "Complete" %>
 				<h5> <%= link_to game.name, game_path(game) %> </h5>
 			<% end %>
 		<% end %>
