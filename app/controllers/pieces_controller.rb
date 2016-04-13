@@ -20,7 +20,7 @@ class PiecesController < ApplicationController
 		end
 
 		if move[:checkmate]
-			flash.keep[:alert] = "Checkmate!"
+			flash[:alert] = "Checkmate!"
 			@current.game.set_status("Complete")
 		end
 
