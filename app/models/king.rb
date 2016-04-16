@@ -8,6 +8,7 @@ class King < Piece
  		return true if castling? && dy.abs == 2 && dx == 0
  		return false
   	end
+  	
   	## no pieces between king and rook, and both are at their original positions
 	def castling?
 		rooks = self.game.pieces.where("user_id = ? AND type = ?", self.user_id, "Rook")

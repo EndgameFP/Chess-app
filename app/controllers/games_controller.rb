@@ -17,7 +17,7 @@ class GamesController < ApplicationController
 		if @game.valid? 
 			@game.update_attribute(:white_player_id, current_user.id)
 			@game.update_attribute(:turn_player_id, current_user.id)
-			redirect_to @game
+			redirect_to root_path
 		else
 			render 'new', status: :unprocessable_entity
 		end
@@ -25,11 +25,9 @@ class GamesController < ApplicationController
 
 	def show
 		@game = Game.find_by_id(params[:id])
-		@current_user=current_user
-		@user = User.all
+		@current_user = current_user
+		@users = User.all
 		@pieces = @game.pieces
-		@selected_piece = @pieces.find_by_is_selected(true)
-		## whether a pieces is selected
 		@pieces_on_tiles = @pieces.map(&:tile_id)
 
 	end

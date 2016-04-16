@@ -4,10 +4,10 @@ class PiecesController < ApplicationController
 	
 	def update
 		@current = Piece.find_by_id(params[:id])
+		orig_x = @current.x_position
+		orig_y = @current.y_position
 		move=@current.make_move(params[:x_position].to_i,params[:y_position].to_i)
 		if move[:valid]
-			#@current.update_attribute(:x_position, params[:x_position])
-			#@current.update_attribute(:y_position, params[:y_position])
 			@current.update_attribute(:has_moved, true)
 		end
 	
@@ -15,17 +15,21 @@ class PiecesController < ApplicationController
 			move[:captured].destroy
 		end
 
+		if move[:en_passant]
+			move[:en_passant].destroy
+		end
+
 
 		if move[:checkmate]
-			flash[:alert] = "Checkmate!"
 			@current.game.set_status("Complete")
 		end
 
 	 	update_firebase(
+	 		piece: @current,	 		
 	 		move: move, 
-	 		x_position: params[:x_position] ,
-	 		y_position: params[:y_position] , 
-	 		id: params[:id],
+	 		your_turn: @current.game.turn_player_id,
+	 		orig_x: orig_x,
+	 		orig_y: orig_y , 
 	 		time_stamp: Time.now)
 	 	
 
@@ -41,11 +45,11 @@ class PiecesController < ApplicationController
 	end
 
 	def update_firebase(data)
-		base_uri = 'https://dazzling-fire-5900.firebaseio.com/'
+		base_uri = 'https://boiling-heat-305.firebaseio.com/'
 
 		firebase = Firebase::Client.new(base_uri)
 
-		response = firebase.push('update_piece', data)
+		response = firebase.set('update_piece', data)
 		response.success?
 	end
 

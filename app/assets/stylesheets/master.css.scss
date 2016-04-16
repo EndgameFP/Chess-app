@@ -29,10 +29,18 @@ body {
 }
 .join-game {
 	overflow: hidden;
-
 }
 
 .game-info ul {
 	list-style: none;
-	font-size: 16px;	
+	font-size: 16px;
+	padding: 20px;	
+}
+
+.flash {
+	display: none;
+}
+
+.game-info {
+	margin: 50px;
 }

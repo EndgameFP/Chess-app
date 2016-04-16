@@ -5,7 +5,7 @@ class Game < ActiveRecord::Base
 
 	validates :name, presence: true
 
-  	def bpid
+	def bpid
   		update_attributes(turn_player_id: black_player_id) 
   	end
 
@@ -15,6 +15,7 @@ class Game < ActiveRecord::Base
 
   	def set_last_move(piece_id, prev_x, prev_y)
   		update_attribute(:last_move, [piece_id, prev_x, prev_y])
+  		puts self.last_move.inspect
   	end
 
   	def set_status(status)

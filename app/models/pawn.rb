@@ -40,9 +40,29 @@ class Pawn < Piece
 			mid_x = prev_x - 1 
 		end 
 
-
 		return true if last_piece_moved.type == "Pawn" && (last_piece_moved.x_position - prev_x).abs == 2 && dest_x == mid_x && dest_y == prev_y
 		return false
+	end
+
+	def white_pawn
+		return true if self.type == 'Pawn' && self.color == 'white'
+	end
+
+	def black_pawn
+		return true if self.type == 'Pawn' && self.color == 'black'
+	end
+
+	def can_promote
+		return true if self.x_position == 1 && white_pawn == true
+		return true if self.x_position == 8 && black_pawn == true
+	end
+
+	def pawn_promote
+		if self.white_pawn == true && self.can_promote == true
+			self.update_attributes(type: 'Queen', image: "white_queen.png")
+		elsif self.black_pawn == true && self.can_promote == true
+			self.update_attributes(type: 'Queen', image: "black_queen.png")
+		end
 	end
 
 end
