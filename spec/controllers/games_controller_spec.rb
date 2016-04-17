@@ -46,7 +46,7 @@ RSpec.describe GamesController, type: :controller do
 			sign_in user
 
 			post :create, game: { name: 'Rival' }
-			expect(response).to redirect_to( game_path(assigns(:game).id))
+			expect(response).to redirect_to(root_path)
 
 			game = Game.last
 

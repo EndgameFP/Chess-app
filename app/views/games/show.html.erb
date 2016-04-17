@@ -4,6 +4,7 @@
 	myFirebaseRef.child("update_piece").on("value", function(snapshot) {
 
 		var newMove = snapshot.val();
+		console.log(newMove);
 		if(newMove.piece.game_id == <%=@game.id%>){
 			if(newMove.your_turn && <%=@current_user.id%> == newMove.your_turn) {
 				$('#your_turn').show();
@@ -14,9 +15,10 @@
 			if(newMove.move.valid) {
 				var newPosition = newMove.piece.x_position + "-" + newMove.piece.y_position;
 				var movingPiece = $("#" + newMove.orig_x + "-" + newMove.orig_y+ "-img");
+				console.log(movingPiece);
 				
 				$(function(){
-					if(newMove.move.captured) {
+					if(newMove.move.captured && movingPiece[0]) {
 						$("#" + newPosition).find($('.icon')).replaceWith(movingPiece).attr("id", newPosition + "-img");
 					} else {			
 						movingPiece.appendTo($("#" + newPosition)).attr("id", newPosition + "-img");
