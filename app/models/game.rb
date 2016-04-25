@@ -5,7 +5,7 @@ class Game < ActiveRecord::Base
 
 	validates :name, presence: true
 
-  	def bpid
+	def bpid
   		update_attributes(turn_player_id: black_player_id) 
   	end
 

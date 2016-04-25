@@ -1,6 +1,4 @@
 class Piece < ActiveRecord::Base
-	after_save :update_game_turn
-	after_save :pawn_promote
 
 	attr_accessor :wpid
 	attr_accessor :bpid
@@ -16,68 +14,46 @@ class Piece < ActiveRecord::Base
 	    return { valid:false } if game.status == "Complete"
 		return { valid:false } if !is_valid?(x,y) || self.is_obstructed?(x, y) 
  
- 		## move rook piece to castling position
+		move = Hash.new
+
+ 		## move rook piece to castling position and test for check on own king
  		if self.type == "King" && self.castling?
- 			castling_move_rook(y)
- 			return { valid:true } 
- 		end
-
-		prev_x = self.x_position
-		prev_y = self.y_position
-		self.update_attributes(:x_position => x, :y_position => y) # Must update position to accurately test for check
-
-		own_king = self.game.pieces.where(user_id: self.user_id, type: "King").first
-		if check(own_king).count != 0 # Can't move and expose own king to check- this statement evaluates to true if there is a threat to the king
-			self.update_attributes(:x_position => prev_x, :y_position => prev_y) #Return moved piece to original position
-			return { valid:false }
+ 			return { valid:false } if !castling_move_rook(x, y, move)
+ 		else
+ 			# Can't move and expose own king to check- this statement evaluates to true if there is a threat to the king
+			own_king = self.game.pieces.where(user_id: self.user_id, type: "King").first
+			return { valid:false } if check(own_king, self, x, y).count != 0 
 		end
 
+		if self.type == "Pawn" && self.can_en_passant?(x,y)
+			captured_pawn = self.game.pieces.where(id: self.game.last_move[0]).first
+			move.store(:en_passant, captured_pawn) 
+		end
+
+		self.game.set_last_move(self.id, self.x_position, self.y_position)
+		self.update_attributes(:x_position => x, :y_position => y)
+
+		if self.type == "Pawn" && self.can_promote
+			self.pawn_promote
+			move.store(:pawn_promote, true)
+		end
+		
+
 		opponent_king = self.game.pieces.where("user_id != ? AND type = ?", self.user_id, "King").first
-		threats_to_king = check(opponent_king) # Returns array of all pieces putting king in check, which will be used for checkmate
+		threats_to_king = check(opponent_king, self, x, y) # Returns array of all pieces putting king in check, which will be used for checkmate
 		check_mate = false
 		if !threats_to_king.empty? # Evaluates true if there is a piece(s) threatening the king
 			check_mate = true if checkmate?(opponent_king, threats_to_king)
 		end 
 
-		self.update_attribute(:has_moved, true)
-		self.game.set_last_move(self.id, self.x_position, self.y_position)
+		move.store(:checkmate, check_mate)
+		move.store(:captured, piece_at_dest) if piece_at_dest && piece_at_dest.user_id != self.user_id
 
-		return { valid:true, captured:piece_at_dest, checkmate:check_mate } if piece_at_dest && piece_at_dest.user_id != self.user_id
-
-		if self.type == "Pawn" && self.can_en_passant?(x,y)
-			captured_pawn = self.game.pieces.where(id: self.game.last_move[0]).first
-			self.game.set_last_move(self.id, self.x_position, self.y_position)
-			return { valid:true, captured:captured_pawn, checkmate:check_mate } 
-		end
-
-		return { valid:true, checkmate:check_mate }
-	end
-
-	def white_pawn
-		return true if self.type == 'Pawn' && self.color == 'white'
-	end
-
-	def black_pawn
-		return true if self.type == 'Pawn' && self.color == 'black'
-	end
-
-	def can_promote
-		return true if self.x_position == 1 && white_pawn == true
-		return true if self.x_position == 8 && black_pawn == true
-	end
-
-	def pawn_promote
-		if self.white_pawn == true && self.can_promote == true
-			self.update_attributes(type: 'Queen', image: "white_queen.png")
-		elsif self.black_pawn == true && self.can_promote == true
-			self.update_attributes(type: 'Queen', image: "black_queen.png")
-		end
+		move.store(:valid, true)
+		update_game_turn
+		return move
 	end
 	
-	def update_game_turn
-		self.game.bpid if self.color == 'white'
-		self.game.wpid if self.color == 'black'
-	end
 
 	def player_turn
 		user_id == game.turn_player_id
@@ -90,30 +66,40 @@ class Piece < ActiveRecord::Base
 
 	def piece_at(x,y)
 		pieces_at = self.game.pieces.where(x_position: x, y_position: y)
-
 		# If there are multiple pieces at this location, return the opposing piece for accurate testing
+
 		pieces_at.each do |piece|
-			return if piece.user_id != self.user_id
+			return piece if piece.user_id != self.user_id
 		end
+
 		return pieces_at.first
 	end
 
-	def check(king)
+  	def update_game_turn
+		self.game.bpid if self.color == 'white'
+		self.game.wpid if self.color == 'black'
+	end
+
+	def check(king, piece, dest_x, dest_y)
+		prev_x = piece.x_position
+		prev_y = piece.y_position
+		piece.update_attributes(:x_position => dest_x, :y_position => dest_y) # Must update position to accurately test for check
+		king = piece if king.id == piece.id #updates king's attributes if testing itself
 		opponent_pieces = self.game.pieces.where("user_id != ?", king.user_id)
 		threats = [] # Must collect all pieces that threaten the king to use when testing for checkmate
-		opponent_pieces.each do |piece|
+		opponent_pieces.each do |opp_piece|
 			# Tests if any opponent piece can legally move to the king's position (and capture it)
-			if piece.is_valid?(king.x_position, king.y_position) && !piece.is_obstructed?(king.x_position, king.y_position) 
-				threats << piece	
+			if opp_piece.is_valid?(king.x_position, king.y_position) && !opp_piece.is_obstructed?(king.x_position, king.y_position) 
+				threats << opp_piece unless opp_piece.x_position == piece.x_position && opp_piece.y_position == piece.y_position && piece.id != opp_piece.id
 			end
 		end
+
+		piece.update_attributes(:x_position => prev_x, :y_position => prev_y) #Return moved piece to original position
 		return threats
 	end 
 
 	def checkmate?(king, threats)
 		# Test to see if king can move out of check
-		can_move = true
-		opponent_pieces = self.game.pieces.where("user_id != ?", king.user_id)
 		kings_x = king.x_position
 		kings_y = king.y_position
 
@@ -123,13 +109,7 @@ class Piece < ActiveRecord::Base
 				new_y = king.y_position + col 
 				if new_x > 0 && new_x < 9 && new_y > 0 && new_y < 9 # Prevents king from moving off board
 					if !king.is_obstructed?(new_x, new_y) # Prevents king from moving onto tile occupied by friendly piece
-						king.update_attributes(:x_position => new_x, :y_position => new_y) # Must update coords to accurately test oppenent pieces
-						opponent_pieces.each do |piece| # Checks to see if any opponent piece can capture the king in new position
-							can_move = false if piece.is_valid?(new_x, new_y) && !piece.is_obstructed?(new_x, new_y)
-						end
-						king.update_attributes(:x_position => kings_x, :y_position => kings_y)
-						return false if can_move == true # If no piece can capture the king in new position, king isn't in checkmate
-						can_move = true
+						return false if check(king, king, new_x, new_y).count == 0
 					end
 				end
 			end
@@ -146,14 +126,8 @@ class Piece < ActiveRecord::Base
 		friendly_pieces.each do |piece| # See if any piece can capture threat
 			if piece.is_valid?(threats_x, threats_y) && !piece.is_obstructed?(threats_x, threats_y)
 				# If the piece can capture, test piece at new location to ensure king isn't exposed to check by moving
-				prev_x = self.x_position
-				prev_y = self.y_position
-				self.update_attributes(:x_position => threats_x, :y_position => threats_y) 
-				new_threats = check(king)
-				self.update_attributes(:x_position => prev_x, :y_position => prev_y) 
-				return false if new_threats.count == 0
+				return false if check(king, piece, threats_x, threats_y).count == 0
 			end
-
 		end
 
 		return true if threat.type == "Knight" # If threat is a Knight, it can't be obstructed, and thus can't be blocked
@@ -190,12 +164,7 @@ class Piece < ActiveRecord::Base
 					if (dx == 0 && kings_x - x == 0) || (dy == 0 && kings_y - y == 0) || (dx == dy && (kings_y - y).abs == (kings_x - x).abs)
 						if piece.is_valid?(x, y) && !piece.is_obstructed?(x, y)
 							# If the piece can block, test to see if moving piece exposes king to check
-							prev_x = self.x_position
-							prev_y = self.y_position
-							self.update_attributes(:x_position => x, :y_position => y) 
-							new_threats = check(king)
-							self.update_attributes(:x_position => prev_x, :y_position => prev_y) 
-							return false if new_threats.count == 0
+							return false if check(king, piece, x, y).count == 0
 						end
 					end
 				end
@@ -210,6 +179,7 @@ class Piece < ActiveRecord::Base
  		# Checks to see if friendly piece is at destination tile
  		# Will not return true if destination is occupied by enemy piece
  		return true if self.x_position == dest_x && self.y_position == dest_y
+ 		
  		piece_at_dest = piece_at(dest_x,dest_y)
  		return true if piece_at_dest && piece_at_dest.user_id == self.user_id || pieces_between?(dest_x,dest_y)
 
@@ -262,15 +232,26 @@ class Piece < ActiveRecord::Base
     end
 
     ## move rook when castling apply
-    def castling_move_rook(dest_y)
+    def castling_move_rook(dest_x, dest_y, move)
     	dy = self.y_position - dest_y
     	if dy > 0
     		rook = self.game.pieces.where(user_id: self.user_id, type: "Rook", y_position: 1).first
-    		rook.update_attributes(:y_position => 4, :has_moved => true)
+    		new_y = 4
     	else
     		rook = self.game.pieces.where(user_id: self.user_id, type: "Rook", y_position: 8).first
-    		rook.update_attributes(:y_position=>6, :has_moved => true)
+    		new_y = 6
     	end
+
+    	orig_y = rook.y_position
+		rook.update_attributes(:y_position=>new_y, :has_moved => true)
+
+    	if check(self, self, dest_x, dest_y).count != 0 
+    		rook.update_attributes(:y_position => orig_y, :has_moved => false)
+    		return false
+    	end
+
+    	move.store(:castling, [rook, dest_x, orig_y])
+    	return true
     end
 
 	def is_valid?(x,y)
